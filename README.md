@@ -93,4 +93,4 @@ Could not open device at /dev/ipmi0 or /dev/ipmi/0 or /dev/ipmidev/0: No such fi
 ``` ./gpu-cpu.sh <interval> <duration> ```
 
 ## **5. Run ```make-csv.sh``` file, log.csv csv file will be create.**
-``` ./make-csv.sh
+``` ./make-csv.sh ```
