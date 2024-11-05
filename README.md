@@ -3,7 +3,7 @@
 OS : Ubuntu 22.04
 tools : NVIDIA graphic driver, CUDA, lm-sensor
 
-File description
+## **File description**
 1. gpu-cpu.sh
 
 This file records the temperature and utilization of GPUs from index 0 to index N, as shown by nvidia-smi, as well as the temperature values for AMD CPUs (Tctl) and Intel CPUs (Package id) as reported by sensors.
@@ -19,19 +19,19 @@ This file checks the status of the CPU, GPU, Memory, Storage, USB state, network
 
 # **How to Use**
 
-1. move Check_server_information
+## **1. move Check_server_information**
 ```
 cd Check_server_information
 ```
 
-2. Change chmod gpu-cpu.sh, make-csv.sh, test.sh
+## **2. Change chmod gpu-cpu.sh, make-csv.sh, test.sh**
 ```
 chmod +x gpu-cpu.sh
 chmod +x make-csv.sh
 chmod +x test.sh
 ```
 
-3. Run ```test.sh``` file , and You can capture output 
+## **3. Run ```test.sh``` file , and You can capture output**
 
 ```
 OUT PUT SAMPLE
@@ -89,7 +89,7 @@ Could not open device at /dev/ipmi0 or /dev/ipmi/0 or /dev/ipmidev/0: No such fi
 
 ```
 
-4. Run ```gpu-cpu.sh``` file, GPU_CPU_log.txt file will be create.
+## **4. Run ```gpu-cpu.sh``` file, GPU_CPU_log.txt file will be create.**
 ``` ./gpu-cpu.sh <interval> <duration> ```
 
-5. Run ```make-csv.sh``` file, log.csv csv file will be create.
+## **5. Run ```make-csv.sh``` file, log.csv csv file will be create.**
