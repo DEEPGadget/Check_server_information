@@ -103,7 +103,7 @@ else
 fi
 
 echo "*GPU burn 60 second..for check PCIe Stat                                                           *"
-#./gpu_burn 60 > /dev/null 2>&1 &
+./gpu_burn 60 > /dev/null 2>&1 &
 
 if command -v network-test &> /dev/null; then
     echo "*network-test successfully installed.                                                              *"
