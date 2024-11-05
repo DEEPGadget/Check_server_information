@@ -1,7 +1,7 @@
 # **Prerequisite setup**
 
 OS : Ubuntu 22.04
-tools : NVIDIA graphic driver, CUDA, lm-sensor
+tools : NVIDIA graphic driver, CUDA, lm-sensor, ifupdown-extra, ipmitools
 
 ## **File description**
 1. gpu-cpu.sh
