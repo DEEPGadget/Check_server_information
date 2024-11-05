@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# 인자 확인
 if [ $# -ne 2 ]; then
   echo "Usage: $0 <interval> <duration>"
   exit 1
@@ -22,18 +21,18 @@ echo "⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿�
 echo "****************************************************************************************************"
 echo "*Recording GPU, CPU information....                                                                *"
 
-# 로그 파일 초기화
+#log.txt reset
 log_file="GPU_CPU_log.txt"
 echo "Timestamp, GPU and CPU Usage Log" > "$log_file"
 
-# CPU가 AMD인지 확인
+#check CPU model (AMD,Intel)
 is_amd=$(lscpu | grep -i 'amd' | wc -l)
 
-# 스크립트 실행
+#Run script
 while [ $SECONDS -lt $end_time ]; do
   timestamp=$(date '+%Y-%m-%d %H:%M:%S')
 
-  # 각 GPU의 온도와 전력 사용량 및 최대 전력 추출
+  #Get GPU temp, Util
   gpu_info=""
   gpu_count=$(nvidia-smi --query-gpu=index --format=csv,noheader | wc -l)
   for ((i=0; i<gpu_count; i++)); do
@@ -44,19 +43,19 @@ while [ $SECONDS -lt $end_time ]; do
     gpu_info+="GPU${i}, ${temp}C,${power_draw}W /${power_limit}W "
   done
 
-  # CPU 온도 추출 (AMD: Tctl, Intel: 각 소켓의 Package id)
+  #Get CPU temp 
   if [ "$is_amd" -gt 0 ]; then
-    # AMD CPU: Tctl 값 추출
+    # AMD CPU: Tctl
     cpu_temp=$(sensors | grep 'Tctl' | awk '{printf "Tctl, %s ", $2}')
   else
-    # Intel CPU: 각 소켓의 Package id 값 추출
+    # Intel CPU: Package id 
     cpu_temp=$(sensors | grep -E 'Package id [0-9]+' | awk '{printf "%s, %s ", $1, $4}')
   fi
 
-  # 결과를 로그 파일에 저장
+  #save log
   echo "$timestamp, $gpu_info $cpu_temp" >> "$log_file"
 
-  # 간격 시간 동안 대기
+  #sleep interval time
   sleep "$interval"
 done
 echo "****************************************************************************************************"
