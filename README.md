@@ -19,8 +19,9 @@ This file checks the status of the CPU, GPU, Memory, Storage, USB state, network
 
 # **How to Use**
 
-## **1. move Check_server_information**
+## **1. git clone and move Check_server_information**
 ```
+git clone https://github.com/DEEPGadget/Check_server_information.git
 cd Check_server_information
 ```
 
