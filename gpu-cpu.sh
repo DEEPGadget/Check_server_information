@@ -23,7 +23,7 @@ echo "*Recording GPU, CPU information....                                       
 
 #log.txt reset
 log_file="GPU_CPU_log.txt"
-echo "Timestamp, GPU and CPU Usage Log" > "$log_file"
+echo "Timestamp,NVME(C),Memory used(MB),GPU and CPU Usage Log" > "$log_file"
 
 #check CPU model (AMD,Intel)
 is_amd=$(lscpu | grep -i 'amd' | wc -l)
@@ -32,6 +32,12 @@ is_amd=$(lscpu | grep -i 'amd' | wc -l)
 while [ $SECONDS -lt $end_time ]; do
   timestamp=$(date '+%Y-%m-%d %H:%M:%S')
 
+  #Get M2 temp
+  nvme_temp=$(sudo nvme smart-log /dev/nvme0 | grep "^temperature" | awk '{print $3}')
+
+  #Get Memory used
+  total_memory=$(free -m | awk '/^Mem:/ {print $2}')
+  used_memory=$(free -m | awk '/^Mem:/ {print $3}')
   #Get GPU temp, Util
   gpu_info=""
   gpu_count=$(nvidia-smi --query-gpu=index --format=csv,noheader | wc -l)
@@ -53,7 +59,7 @@ while [ $SECONDS -lt $end_time ]; do
   fi
 
   #save log
-  echo "$timestamp, $gpu_info $cpu_temp" >> "$log_file"
+  echo "$timestamp,$nvme_temp,$used_memory $gpu_info $cpu_temp" >> "$log_file"
 
   #sleep interval time
   sleep "$interval"

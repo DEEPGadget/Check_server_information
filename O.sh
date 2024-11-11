@@ -6,22 +6,19 @@ output_file="output.csv"
 
 # Initialize output file with a basic header
 echo -n "Timestamp,NVME(C),Memory used(MB)" > "$output_file"
-gpu_count0=$(nvidia-smi --query-gpu=name --format=csv,noheader | wc -l)
-
-for ((i=0; i<gpu_count0; i++)); do
-    echo -n ",GPU${i}_Temp,GPU${i}_Util" >> "$output_file"
-done
-
-#echo "" >> "$output_file"  # Move to a new line after the header
 
 # Read the first line to detect the number of GPUs and build the header dynamically
 first_line=$(head -n 1 "$input_file" | tail -n 1)
-gpu_count=$(echo "$first_line" | grep -o "GPU[0-9]" | wc -l)
 
-# Add GPU headers dynamically based on detected GPU count
+gpu_count=$(grep -o "GPU[0-9]" "$input_file" | sort -u | wc -l)
 for ((i=0; i<gpu_count; i++)); do
-  echo -n ",GPU${i} Temp(C),GPU${i} Power(W)" >> "$output_file"
+  header+=",GPU${i}_Temp,GPU${i}_Util"
 done
+header+=",CPU0_Temp,CPU1_Temp"
+echo "$header" > "$output_file"
+
+
+
 
 # Add CPU Package headers
 echo ",CPU Package1 Temp(C),CPU Package2 Temp(C)" >> "$output_file"
@@ -40,8 +37,8 @@ tail -n +2 "$input_file" | while IFS= read -r line; do
   gpu_data=$(echo "$line" | grep -o "GPU[0-9], [0-9]*C, [0-9.]*W / [0-9.]*W")
   while read -r gpu_info; do
     gpu_temp=$(echo "$gpu_info" | awk '{print $2}' | sed 's/C,//')
-    gpu_power=$(echo "$gpu_info" | awk '{print $3$4$5}')  # Remove spaces around power values
-    output_line+=",${gpu_temp},${gpu_power}"
+    gpu_util=$(echo "$gpu_info" | awk '{print $3$4$5}')  # Remove spaces around power values
+    output_line+=",${gpu_temp},${gpu_util}"
   done <<< "$gpu_data"
 
   # Add CPU Package temperatures
@@ -55,4 +52,3 @@ tail -n +2 "$input_file" | while IFS= read -r line; do
 done
 
 echo "Data extraction complete. Check output.csv for results."
-
