@@ -26,6 +26,9 @@ done
 # Add CPU Package headers
 echo ",CPU Package1 Temp(C),CPU Package2 Temp(C)" >> "$output_file"
 
+
+cpu_vendor=$(lscpu | grep "Vendor ID" | awk '{print $3}')
+
 # Process each line in the input file
 tail -n +2 "$input_file" | while IFS= read -r line; do
   # Extract basic fields
@@ -44,9 +47,20 @@ tail -n +2 "$input_file" | while IFS= read -r line; do
     output_line+=",${gpu_temp},${gpu_power}"
   done <<< "$gpu_data"
 
-  # Add CPU Package temperatures
-  cpu_pkg1=$(echo "$line" | grep -o "Package, +[0-9.]*°C" | awk 'NR==1 {print $2}' | sed 's/+//;s/°C//')
-  cpu_pkg2=$(echo "$line" | grep -o "Package, +[0-9.]*°C" | awk 'NR==2 {print $2}' | sed 's/+//;s/°C//')
+  # Add CPU temperatures based on vendor
+  if [[ "$cpu_vendor" == "GenuineIntel" ]]; then
+    # Intel CPU: use Package temperatures
+    cpu_pkg1=$(echo "$line" | grep -o "Package, +[0-9.]*°C" | awk 'NR==1 {print $2}' | sed 's/+//;s/°C//')
+    cpu_pkg2=$(echo "$line" | grep -o "Package, +[0-9.]*°C" | awk 'NR==2 {print $2}' | sed 's/+//;s/°C//')
+    output_line+=",${cpu_pkg1},${cpu_pkg2}"
+  elif [[ "$cpu_vendor" == "AuthenticAMD" ]]; then
+    # AMD CPU: use Tctl temperatures
+    cpu_tctl1=$(echo "$line" | grep -o "Tctl, +[0-9.]*°C" | awk 'NR==1 {print $2}' | sed 's/+//;s/°C//')
+    cpu_tctl2=$(echo "$line" | grep -o "Tctl, +[0-9.]*°C" | awk 'NR==2 {print $2}' | sed 's/+//;s/°C//')
+    output_line+=",${cpu_tctl1},${cpu_tctl2}"
+  fi
+
+
   
   output_line+=",${cpu_pkg1},${cpu_pkg2}"
 
