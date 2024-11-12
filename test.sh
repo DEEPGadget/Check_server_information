@@ -64,16 +64,6 @@ for bus in $(lsusb | awk '{print $2}' | sort -u); do
 done
 
 #echo "$usb_status"
-#PCIe lane (GPU Burn and check PCIe lane.)
-
-# lspci -> NVIDIA VGA controller information get
-lspci_output=$(sudo lspci -vvv | grep -A 30 "VGA compatible controller: NVIDIA")
-
-# Device address information get
-device_address=$(echo "$lspci_output" | grep "VGA compatible controller" | awk '{print $1}')
-
-# LnkSta information get
-lnksta_info=$(echo "$lspci_output" | grep "LnkSta")
 
 echo "⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿"
 echo "⣿⣿⣿⣿⣿⠿⠿⠿⠤⠤⠤⠽⠿⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿"
@@ -102,8 +92,8 @@ else
     echo "*Checking GPU PCIe.... Please wait a moment.                                                       *"
 fi
 
-echo "*GPU burn 60 second..for check PCIe Stat                                                           *"
-#./gpu_burn 60 > /dev/null 2>&1 &
+echo "*GPU burn 120 second..for check PCIe Stat                                                          *"
+./gpu_burn 120 > /dev/null 2>&1 &
 
 if command -v network-test &> /dev/null; then
     echo "*network-test successfully installed.                                                              *"
@@ -119,7 +109,8 @@ fi
 
 echo "****************************************************************************************************"
 #gpu-burn wait....
-sleep 3
+sleep 10
+pcie_status=$(sudo lspci -vvv | grep NVIDIA -A 30 | grep LnkSta)
 
 #output
 echo "===================================================================================================="
@@ -131,7 +122,7 @@ echo "CPU Socket : $cpu_sockets"
 echo "GPU Model : $gpu_model"
 echo "GPU EA : $gpu_count EA"
 echo "GPU PCIe Stat :"
-echo "$lnksta_info"
+echo "$pcie_status"
 echo "Memory : $memory_total"
 echo "Storage :  SIZE       TYPE"
 echo "$storage_list"
